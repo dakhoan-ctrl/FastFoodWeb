@@ -1,0 +1,42 @@
+﻿@model FastFoodWeb.Models.Order
+
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow border-0 p-5" style="border-radius: 25px;">
+                <div class="mb-4">
+                    <div class="display-1 text-success">🎉</div>
+                    <h1 class="text-danger fw-bold mt-3">CHÚC MỪNG BẠN!</h1>
+                    <h3 class="text-dark">Đơn hàng của bạn đã được đặt thành công</h3>
+                </div>
+
+                <div class="alert alert-success border-0 py-3 mb-4" style="background-color: #f0fff4;">
+                    <p class="mb-1 text-muted">Mã đơn hàng của bạn là:</p>
+                    <h2 class="fw-bold text-success mb-0">#@Model.OrderId</h2>
+                </div>
+
+                <div class="text-start bg-light p-4 rounded mb-4">
+                    <h5 class="fw-bold border-bottom pb-2 mb-3">Thông tin nhận hàng:</h5>
+                    <p class="mb-2"><strong>Người nhận:</strong> @Model.Name</p>
+                    <p class="mb-2"><strong>Số điện thoại:</strong> @Model.PhoneNumber</p>
+                    <p class="mb-2"><strong>Địa chỉ:</strong> @Model.Address</p>
+                    <p class="mb-0"><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+
+                <p class="text-muted italic mb-4">
+                    Cửa hàng sẽ liên hệ với bạn trong giây lát để xác nhận đơn hàng. Chúc bạn một mùa Giáng sinh ấm áp! 🎄
+                </p>
+
+                <div class="d-grid gap-2 d-md-block">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-danger px-5 py-2 fw-bold shadow-sm" style="border-radius: 10px;">
+                        TIẾP TỤC MUA SẮM 🍗
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

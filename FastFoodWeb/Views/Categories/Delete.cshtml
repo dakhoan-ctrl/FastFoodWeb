@@ -1,0 +1,29 @@
+﻿@model FastFoodWeb.Models.Category
+
+@{
+    ViewData["Title"] = "Xác nhận xóa danh mục";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0 mx-auto" style="max-width: 600px; border-radius: 20px;">
+        <div class="card-header bg-danger text-white text-center py-3">
+            <h4 class="mb-0 fw-bold">⚠️ XÁC NHẬN XÓA DANH MỤC</h4>
+        </div>
+        <div class="card-body p-4 text-center">
+            <h5 class="text-muted mb-4">Bạn có chắc chắn muốn xóa danh mục này?</h5>
+
+            <div class="alert alert-light border py-3 shadow-sm text-start">
+                <p class="mb-1 text-muted">Mã danh mục: <strong>@Model.CategoryId</strong></p>
+                <h4 class="text-dark fw-bold mb-0">Tên: @Model.Name</h4>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="CategoryId" />
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a asp-action="Index" class="btn btn-secondary px-4 fw-bold">QUAY LẠI</a>
+                    <button type="submit" class="btn btn-danger px-5 fw-bold shadow">XÓA NGAY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

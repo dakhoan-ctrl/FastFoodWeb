@@ -1,0 +1,38 @@
+﻿@model FastFoodWeb.Models.Product
+
+@{
+    ViewData["Title"] = "Xác nhận xóa";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0 mx-auto" style="max-width: 600px; border-radius: 15px;">
+        <div class="card-header bg-danger text-white text-center py-3" style="border-radius: 15px 15px 0 0;">
+            <h4 class="mb-0 fw-bold">⚠️ XÁC NHẬN XÓA MÓN ĂN</h4>
+        </div>
+        <div class="card-body p-4 text-center">
+            <h5 class="text-muted mb-4">Bạn có chắc chắn muốn xóa vĩnh viễn món ăn này không?</h5>
+
+            <div class="p-3 border rounded bg-light mb-4 shadow-sm text-start">
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <img src="@Model.ImageUrl" class="img-fluid rounded border" style="max-height: 120px;" />
+                    </div>
+                    <div class="col-8">
+                        <h4 class="text-dark mb-1">@Model.Name</h4>
+                        <p class="text-danger fw-bold fs-5 mb-0">Giá: @Model.Price.ToString("N0") VNĐ</p>
+                        <p class="text-muted small mb-0">Danh mục: @Model.Category?.Name</p>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="ProductId" />
+
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-action="Index" class="btn btn-secondary px-4 fw-bold">QUAY LẠI</a>
+                    <button type="submit" class="btn btn-danger px-5 fw-bold shadow">XÓA NGAY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo thống kê";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger fw-bold"><i class="fas fa-chart-line"></i> BÁO CÁO DOANH THU</h2>
+        <div class="text-muted italic">Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")</div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white shadow border-0" style="border-radius: 15px; transition: 0.3s;">
+                <div class="card-body p-4 text-center">
+                    <h6 class="text-uppercase opacity-75">Hôm nay</h6>
+                    <h2 class="fw-bold mb-0">@ViewBag.DailyTotal.ToString("N0") đ</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white shadow border-0" style="border-radius: 15px;">
+                <div class="card-body p-4 text-center">
+                    <h6 class="text-uppercase opacity-75">Tháng @DateTime.Now.Month</h6>
+                    <h2 class="fw-bold mb-0">@ViewBag.MonthlyTotal.ToString("N0") đ</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card bg-danger text-white shadow border-0" style="border-radius: 15px;">
+                <div class="card-body p-4 text-center">
+                    <h6 class="text-uppercase opacity-75">Năm @DateTime.Now.Year</h6>
+                    <h2 class="fw-bold mb-0">@ViewBag.YearlyTotal.ToString("N0") đ</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 p-4 h-100" style="border-radius: 15px;">
+                <h5 class="fw-bold text-center mb-4 text-muted">Tỷ lệ đóng góp doanh thu</h5>
+                <div style="max-height: 350px;">
+                    <canvas id="revenuePieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow border-0 p-4 h-100" style="border-radius: 15px;">
+                <h5 class="fw-bold mb-4 text-muted text-center">Chi tiết dữ liệu</h5>
+                <ul class="list-group list-group-flush mt-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Ngày hôm nay: <span class="badge bg-primary rounded-pill">@ViewBag.DailyTotal.ToString("N0") đ</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Tháng hiện tại: <span class="badge bg-success rounded-pill">@ViewBag.MonthlyTotal.ToString("N0") đ</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Năm hiện tại: <span class="badge bg-danger rounded-pill">@ViewBag.YearlyTotal.ToString("N0") đ</span>
+                    </li>
+                </ul>
+                <div class="alert alert-info mt-auto mb-0" style="border-radius: 10px;">
+                    <small><i class="fas fa-info-circle"></i> Dữ liệu này được lấy trực tiếp từ bảng <b>Orders</b> trong cơ sở dữ liệu SQL của bạn.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctx = document.getElementById('revenuePieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut', // Kiểu biểu đồ vòng khuyên
+                data: {
+                    labels: ['Ngày', 'Tháng', 'Năm'],
+                    datasets: [{
+                        label: 'Doanh thu (đ)',
+                        data: [@ViewBag.DailyTotal, @ViewBag.MonthlyTotal, @ViewBag.YearlyTotal],
+                        backgroundColor: [
+                            '#0d6efd', // Blue
+                            '#198754', // Green
+                            '#dc3545'  // Red
+                        ],
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+}

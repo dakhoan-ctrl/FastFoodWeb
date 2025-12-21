@@ -1,0 +1,43 @@
+﻿@model FastFoodWeb.Models.Order
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0" style="border-radius: 20px;">
+                <div class="card-header bg-danger text-white text-center py-3" style="border-radius: 20px 20px 0 0;">
+                    <h4 class="mb-0 fw-bold">📍 THÔNG TIN GIAO HÀNG</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Checkout" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Họ và tên người nhận</label>
+                            <input asp-for="Name" class="form-control" placeholder="Nguyễn Văn A" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="090xxxxxxx" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Địa chỉ nhận hàng</label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Số nhà, tên đường, phường/xã..."></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ghi chú (nếu có)</label>
+                            <input asp-for="Note" class="form-control" placeholder="Ví dụ: Giao giờ hành chính..." />
+                        </div>
+                        <div class="bg-light p-3 rounded mb-4 text-center">
+                            <span class="text-muted">Tổng thanh toán:</span>
+                            <h3 class="text-danger fw-bold">@ViewBag.Total.ToString("N0") đ</h3>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold shadow" style="border-radius: 10px;">
+                            XÁC NHẬN ĐẶT HÀNG 🚀
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

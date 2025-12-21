@@ -1,0 +1,78 @@
+﻿@model List<FastFoodWeb.Models.CartItem>
+
+<div class="identity-card mt-4">
+    <h2 class="text-danger fw-bold text-center">🎄 GIỎ HÀNG NOEL CỦA BẠN 🎅</h2>
+    <hr />
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Tổng tiền</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.ProductName</td>
+                            <td>
+                                <img src="@item.ImageUrl" width="70" class="rounded shadow"
+                                     onerror="this.src='/images/no-image.png'" />
+                            </td>
+                            <td>@item.Price.ToString("N0") đ</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <a asp-action="UpdateQuantity" asp-route-id="@item.ProductId" asp-route-quantity="-1"
+                                       class="btn btn-sm btn-outline-secondary">-</a>
+
+                                    <span class="badge bg-danger p-2" style="min-width: 30px;">@item.Quantity</span>
+
+                                    <a asp-action="UpdateQuantity" asp-route-id="@item.ProductId" asp-route-quantity="1"
+                                       class="btn btn-sm btn-outline-secondary">+</a>
+                                </div>
+                            </td>
+                            <td class="fw-bold text-danger">@item.Total.ToString("N0") đ</td>
+                            <td>
+                                <a asp-action="RemoveFromCart" asp-route-id="@item.ProductId"
+                                   class="btn btn-sm btn-outline-dark"
+                                   onclick="return confirm('Bạn muốn xóa món này khỏi giỏ hàng?')">Xóa 🗑️</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-end mt-4">
+            <h3 class="fw-bold">Tổng thanh toán: <span class="text-success">@Model.Sum(x => x.Total).ToString("N0") đ</span></h3>
+            <hr />
+            <div class="d-flex justify-content-end gap-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-outline-danger px-4 py-2 d-flex align-items-center">
+                    Tiếp tục mua sắm
+                </a>
+
+                @* NÚT QUAN TRỌNG NHẤT: Đã đổi sang thẻ <a> để dẫn đến trang Checkout *@
+                <a asp-controller="Cart" asp-action="Checkout" class="btn-noel-submit px-5 py-2 text-decoration-none text-white fw-bold d-flex align-items-center justify-content-center"
+                   style="width:auto; min-width: 250px; background-color: #d9534f; border-radius: 5px;">
+                    ĐẶT HÀNG NGAY 🎁
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" width="120" class="mb-3 opacity-50" />
+            <h4 class="text-muted">Giỏ hàng của bạn đang trống...</h4>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-danger mt-3 px-4">Chọn món ngay 🍗</a>
+        </div>
+    }
+</div>

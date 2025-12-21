@@ -1,0 +1,49 @@
+﻿@model FastFoodWeb.Models.Product
+
+<div class="container mt-4">
+    <div class="card shadow border-0" style="border-radius: 15px;">
+        <div class="card-header bg-warning text-center py-3">
+            <h4 class="fw-bold mb-0 text-dark">✏️ CHỈNH SỬA THỰC ĐƠN</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="ProductId" />
+                <input type="hidden" asp-for="ImageUrl" />
+
+                <div class="mb-3">
+                    <label class="fw-bold">Tên món ăn</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Giá bán (VNĐ)</label>
+                        <input asp-for="Price" type="number" class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Danh mục</label>
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="fw-bold">Hình ảnh</label>
+                    <input type="file" name="file" class="form-control mb-2" accept="image/*" />
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" width="120" class="img-thumbnail" />
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-secondary px-4">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-warning px-5 fw-bold">LƯU THAY ĐỔI</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

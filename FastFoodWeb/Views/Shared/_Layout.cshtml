@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Jolly Noel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --noel-red: #d42426;
+            --noel-green: #1a5d1a;
+            --noel-gold: #ffce44;
+        }
+
+        body {
+            background-image: url('https://img.freepik.com/premium-photo/santa-claus-riding-his-sleigh-with-reindeer-flying-sky-night_955712-1081.jpg');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Navbar chính */
+        .navbar {
+            background-color: var(--noel-red) !important;
+            border-bottom: 3px solid var(--noel-gold);
+        }
+
+        .navbar-brand {
+            color: var(--noel-gold) !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: white !important;
+            font-weight: bold;
+            margin: 0 5px;
+            transition: 0.3s;
+        }
+
+            .nav-link:hover {
+                color: var(--noel-gold) !important;
+                transform: scale(1.05);
+            }
+
+        /* THANH DANH MỤC HÌNH ẢNH */
+        .category-nav {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 0;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .category-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-item {
+            text-align: center;
+            text-decoration: none;
+            width: 110px;
+            transition: 0.3s;
+            color: var(--noel-red);
+        }
+
+            .category-item:hover {
+                transform: translateY(-5px);
+            }
+
+            .category-item img {
+                width: 60px;
+                height: 60px;
+                object-fit: contain;
+                margin-bottom: 5px;
+            }
+
+            .category-item span {
+                display: block;
+                font-size: 11px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+        main[role="main"] {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-toggleable-sm shadow">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">🎄 JOLLY NOEL 🎅</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"></i> Trang chủ
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link bg-white text-danger rounded-pill px-3 shadow-sm mx-2" asp-controller="Cart" asp-action="Index">
+                                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                            </a>
+                        </li>
+
+                        @* --- PHẦN QUẢN LÝ ADMIN --- *@
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link text-warning border border-warning rounded px-2 mx-1 shadow-sm" asp-controller="Products" asp-action="Index"><i class="fas fa-box"></i> Sản phẩm</a></li>
+                            <li class="nav-item"><a class="nav-link text-warning border border-warning rounded px-2 mx-1 shadow-sm" asp-controller="Categories" asp-action="Index"><i class="fas fa-folder"></i> Danh mục</a></li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-white bg-success rounded px-3 border border-light shadow-sm mx-1" asp-controller="Cart" asp-action="OrderList">
+                                    <i class="fas fa-clipboard-list"></i> Đơn hàng
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-white bg-info rounded px-3 border border-light shadow-sm mx-1" asp-controller="Cart" asp-action="Statistics">
+                                    <i class="fas fa-chart-bar"></i> Thống kê
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <div class="ms-auto">
+                        <partial name="_LoginPartial" />
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="category-nav">
+            <div class="container">
+                <div class="category-container">
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="" class="category-item">
+                        <img src="https://jollibee.com.vn/media/catalog/category/menu-mon-ngon_1.png">
+                        <span>Tất cả</span>
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="1" class="category-item">
+                        <img src="https://jollibee.com.vn/media/catalog/category/menu-ga-gion_1.png">
+                        <span>Gà giòn</span>
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="2" class="category-item">
+                        <img src="https://jollibee.com.vn/media/catalog/category/menu-mi-y_1.png">
+                        <span>Mì Ý Jolly</span>
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="3" class="category-item">
+                        <img src="https://jollibee.com.vn/media/catalog/category/menu-burger_1.png">
+                        <span>Burger/Cơm</span>
+                    </a>
+                    @* SỬA TẠI ĐÂY: Thay categoryId="4" thành "5" để khớp với Database của bạn *@
+                    <a asp-controller="Home" asp-action="Index" asp-route-categoryId="5" class="category-item">
+                        <img src="https://jollibee.com.vn/media/catalog/category/menu-thuc-uong_1.png">
+                        <span>Thức uống</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/magic-snowflakes/dist/snowflakes.min.js"></script>
+    <script>var snowflakes = new Snowflakes({ color: '#ffffff', count: 30 });</script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

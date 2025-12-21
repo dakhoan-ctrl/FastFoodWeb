@@ -1,0 +1,101 @@
+﻿@model IEnumerable<FastFoodWeb.Models.Product>
+
+@{
+    ViewData["Title"] = "Thực đơn";
+}
+
+<div class="text-center mb-4">
+    <h2 class="fw-bold text-danger">🎁 THỰC ĐƠN ƯU ĐÃI NOEL 🎁</h2>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form asp-action="Index" method="get" class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden; border: 2px solid #d42426;">
+                <input type="hidden" name="categoryId" value="@Context.Request.Query["categoryId"]" />
+
+                <input type="text" name="searchString" class="form-control border-0 py-2 px-4"
+                       placeholder="Bạn muốn ăn gì? (vd: gà, mì...)"
+                       value="@ViewBag.CurrentSearch"
+                       style="outline: none; box-shadow: none;">
+
+                <button class="btn btn-danger px-4 border-0" type="submit">
+                    <i class="fas fa-search"></i> TÌM KIẾM
+                </button>
+            </form>
+
+            @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch))
+            {
+                <div class="text-center mt-3">
+                    <span class="text-muted italic">Kết quả cho từ khóa: <b class="text-danger">"@ViewBag.CurrentSearch"</b></span>
+                    <a asp-action="Index" asp-route-categoryId="@Context.Request.Query["categoryId"]" class="ms-2 text-decoration-none fw-bold text-dark">
+                        <i class="fas fa-times-circle"></i> Xóa tìm kiếm
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm border-warning" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
+                    <img src="@item.ImageUrl" class="card-img-top" style="height: 180px; object-fit: cover;"
+                         onerror="this.src='/images/no-image.png'">
+
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold text-dark">@item.Name</h6>
+                        <p class="text-danger fw-bold fs-5">@item.Price.ToString("N0") đ</p>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.ProductId"
+                               class="btn btn-danger btn-sm fw-bold rounded-pill shadow-sm">
+                                THÊM VÀO GIỎ 🛒
+                            </a>
+
+                            <a asp-controller="Cart" asp-action="BuyNow" asp-route-id="@item.ProductId"
+                               class="btn btn-warning btn-sm fw-bold rounded-pill shadow-sm text-dark">
+                                MUA NGAY ⚡
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12 text-center py-5 shadow-sm bg-white rounded-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/6134/6134065.png" width="100" class="mb-3 opacity-50">
+            <h4 class="text-muted">Rất tiếc, Jolly không tìm thấy món này!</h4>
+            <p class="text-muted">Thử tìm với từ khóa khác hoặc quay lại trang chủ nhé.</p>
+            <a asp-action="Index" class="btn btn-outline-danger px-4 rounded-pill">Xem tất cả thực đơn</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <style>
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: #ffce44 !important;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        /* Hiệu ứng cho nút Mua ngay khi hover */
+        .btn-warning:hover {
+            background-color: #ffc107;
+            color: #000;
+            transform: scale(1.02);
+        }
+    </style>
+}
