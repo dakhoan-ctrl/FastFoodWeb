@@ -4,6 +4,7 @@ using FastFoodWeb.Models;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FastFoodWeb.Controllers
 {
@@ -16,23 +17,54 @@ namespace FastFoodWeb.Controllers
             _db = db;
         }
 
-        // 1. Hiển thị danh sách giỏ hàng (Khách chưa đăng nhập vẫn xem được)
+        // 1. Xem giỏ hàng
         public IActionResult Index()
         {
-            List<CartItem> cart = GetCartItems();
+            var cart = GetCartItems();
             return View(cart);
         }
 
-        // 2. Thêm sản phẩm vào giỏ hàng
+        // 2. Thêm vào giỏ hàng
         public IActionResult AddToCart(int id)
         {
-            var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product != null)
-            {
-                var cart = GetCartItems();
-                var cartItem = cart.FirstOrDefault(c => c.ProductId == id);
+            var product = _db.Products.Find(id);
+            if (product == null) return NotFound();
 
-                if (cartItem == null)
+            if (User.Identity.IsAuthenticated)
+            {
+                // --- XỬ LÝ CHO USER ĐÃ ĐĂNG NHẬP (DATABASE) ---
+                var userId = GetUserId();
+                var cartItem = _db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == id);
+
+                if (cartItem != null)
+                {
+                    // Đã có -> Tăng số lượng
+                    cartItem.Quantity++;
+                    _db.CartItems.Update(cartItem);
+                }
+                else
+                {
+                    // Chưa có -> Thêm mới
+                    var newItem = new CartItem
+                    {
+                        ProductId = product.ProductId,
+                        ProductName = product.Name,
+                        Price = product.Price,
+                        Quantity = 1,
+                        ImageUrl = product.ImageUrl ?? "",
+                        UserId = userId
+                    };
+                    _db.CartItems.Add(newItem);
+                }
+                _db.SaveChanges();
+            }
+            else
+            {
+                // --- XỬ LÝ CHO KHÁCH VÃNG LAI (SESSION) ---
+                var cart = GetSessionCart();
+                var cartItem = cart.FirstOrDefault(c => c.ProductId == id);
+                if (cartItem != null) cartItem.Quantity++;
+                else
                 {
                     cart.Add(new CartItem
                     {
@@ -43,82 +75,95 @@ namespace FastFoodWeb.Controllers
                         ImageUrl = product.ImageUrl ?? ""
                     });
                 }
-                else
-                {
-                    cartItem.Quantity++;
-                }
-                SaveCartSession(cart);
+                SaveSessionCart(cart);
             }
-            return RedirectToAction("Index", "Home");
+
+            return Ok();
         }
 
-        // 3. MUA NGAY (Yêu cầu ĐĂNG NHẬP)
+        // 3. MUA NGAY: Yêu cầu đăng nhập ([Authorize])
+        // Nếu chưa đăng nhập, hệ thống sẽ tự chuyển qua trang Login
         [Authorize]
         public IActionResult BuyNow(int id)
         {
-            var product = _db.Products.FirstOrDefault(p => p.ProductId == id);
-            if (product != null)
-            {
-                var cart = GetCartItems();
-                var cartItem = cart.FirstOrDefault(c => c.ProductId == id);
-
-                if (cartItem == null)
-                {
-                    cart.Add(new CartItem
-                    {
-                        ProductId = product.ProductId,
-                        ProductName = product.Name,
-                        Price = product.Price,
-                        Quantity = 1,
-                        ImageUrl = product.ImageUrl ?? ""
-                    });
-                }
-                else
-                {
-                    cartItem.Quantity++;
-                }
-                SaveCartSession(cart);
-
-                return RedirectToAction("Checkout");
-            }
-            return RedirectToAction("Index", "Home");
+            AddToCart(id); // Gọi hàm thêm vào giỏ
+            return RedirectToAction("Checkout"); // Chuyển ngay đến trang thanh toán
         }
 
-        // 4. Cập nhật số lượng (Tăng/Giảm)
+        // 3. Cập nhật số lượng (+/-)
         public IActionResult UpdateQuantity(int id, int quantity)
         {
-            var cart = GetCartItems();
-            var item = cart.FirstOrDefault(c => c.ProductId == id);
-            if (item != null)
+            if (User.Identity.IsAuthenticated)
             {
-                item.Quantity += quantity;
-                if (item.Quantity <= 0) cart.Remove(item);
+                var userId = GetUserId();
+                var cartItem = _db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == id);
+                if (cartItem != null)
+                {
+                    cartItem.Quantity += quantity;
+                    if (cartItem.Quantity <= 0) _db.CartItems.Remove(cartItem);
+                    else _db.CartItems.Update(cartItem);
+                    _db.SaveChanges();
+                }
             }
-            SaveCartSession(cart);
+            else
+            {
+                var cart = GetSessionCart();
+                var item = cart.FirstOrDefault(c => c.ProductId == id);
+                if (item != null)
+                {
+                    item.Quantity += quantity;
+                    if (item.Quantity <= 0) cart.Remove(item);
+                }
+                SaveSessionCart(cart);
+            }
             return RedirectToAction("Index");
         }
 
-        // 5. Xóa món khỏi giỏ
+        // 4. Xóa sản phẩm
         public IActionResult RemoveFromCart(int id)
         {
-            var cart = GetCartItems();
-            var item = cart.FirstOrDefault(c => c.ProductId == id);
-            if (item != null) cart.Remove(item);
-            SaveCartSession(cart);
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = GetUserId();
+                var cartItem = _db.CartItems.FirstOrDefault(c => c.UserId == userId && c.ProductId == id);
+                if (cartItem != null)
+                {
+                    _db.CartItems.Remove(cartItem);
+                    _db.SaveChanges();
+                }
+            }
+            else
+            {
+                var cart = GetSessionCart();
+                var item = cart.FirstOrDefault(c => c.ProductId == id);
+                if (item != null)
+                {
+                    cart.Remove(item);
+                    SaveSessionCart(cart);
+                }
+            }
             return RedirectToAction("Index");
         }
 
-        // 6. Thanh toán (Yêu cầu ĐĂNG NHẬP)
+        // 5. Checkout
         [Authorize]
         public IActionResult Checkout()
         {
             var cart = GetCartItems();
-            if (cart.Count == 0) return RedirectToAction("Index", "Home");
             ViewBag.Total = cart.Sum(x => x.Total);
-            return View();
+
+            var user = _db.Users.FirstOrDefault(u => u.Id == GetUserId());
+            var order = new Order();
+            if (user != null)
+            {
+                order.Name = user.FullName;
+                order.Address = user.Address;
+                order.PhoneNumber = user.PhoneNumber;
+            }
+            return View(order);
         }
 
-        // 7. Xử lý lưu đơn hàng (Yêu cầu ĐĂNG NHẬP)
+        // 6. Xử lý đặt hàng
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -129,57 +174,60 @@ namespace FastFoodWeb.Controllers
             {
                 order.OrderDate = DateTime.Now;
                 order.TotalPrice = cart.Sum(x => x.Total);
+                // order.UserId = GetUserId(); // (Bỏ comment nếu dùng)
 
                 _db.Orders.Add(order);
                 await _db.SaveChangesAsync();
 
-                HttpContext.Session.Remove("Cart");
+                ClearCart();
                 return View("OrderSuccess", order);
             }
             ViewBag.Total = cart.Sum(x => x.Total);
             return View(order);
         }
 
-        // 8. Danh sách đơn hàng cho Admin
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> OrderList()
+        // --- CÁC HÀM HỖ TRỢ ---
+
+        private string GetUserId()
         {
-            var orders = await _db.Orders.OrderByDescending(o => o.OrderDate).ToListAsync();
-            return View(orders);
+            return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        // 9. THỐNG KÊ DOANH THU (Chỉ Admin)
-        [Authorize(Roles = "Admin")]
-        public IActionResult Statistics()
-        {
-            var orders = _db.Orders.ToList();
-            var today = DateTime.Today;
-
-            ViewBag.DailyTotal = orders
-                .Where(o => o.OrderDate.Date == today)
-                .Sum(o => o.TotalPrice);
-
-            ViewBag.MonthlyTotal = orders
-                .Where(o => o.OrderDate.Month == today.Month && o.OrderDate.Year == today.Year)
-                .Sum(o => o.TotalPrice);
-
-            ViewBag.YearlyTotal = orders
-                .Where(o => o.OrderDate.Year == today.Year)
-                .Sum(o => o.TotalPrice);
-
-            return View();
-        }
-
-        // --- CÁC HÀM XỬ LÝ SESSION ---
         private List<CartItem> GetCartItems()
         {
-            var sessionData = HttpContext.Session.GetString("Cart");
-            return sessionData == null ? new List<CartItem>() : JsonConvert.DeserializeObject<List<CartItem>>(sessionData)!;
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = GetUserId();
+                return _db.CartItems.Where(c => c.UserId == userId).ToList();
+            }
+            return GetSessionCart();
         }
 
-        private void SaveCartSession(List<CartItem> cart)
+        // Tách riêng logic Session để code gọn hơn
+        private List<CartItem> GetSessionCart()
+        {
+            var sessionCart = HttpContext.Session.GetString("Cart");
+            return string.IsNullOrEmpty(sessionCart) ? new List<CartItem>() : JsonConvert.DeserializeObject<List<CartItem>>(sessionCart);
+        }
+
+        private void SaveSessionCart(List<CartItem> cart)
         {
             HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(cart));
+        }
+
+        private void ClearCart()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = GetUserId();
+                var items = _db.CartItems.Where(c => c.UserId == userId);
+                _db.CartItems.RemoveRange(items);
+                _db.SaveChanges();
+            }
+            else
+            {
+                HttpContext.Session.Remove("Cart");
+            }
         }
     }
 }

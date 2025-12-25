@@ -2,6 +2,20 @@
 
 @{
     ViewData["Title"] = "Đặt hàng thành công";
+
+    // 1. CẤU HÌNH TÀI KHOẢN NGÂN HÀNG CỦA BẠN TẠI ĐÂY
+    var bankId = "970422";          // Mã ngân hàng (VD: MB, VCB, TPB, ACB...) - Xem danh sách bên dưới
+    var accountNo = "0334413830"; // Số tài khoản của bạn
+    var accountName = "PHONG <3 LELE"; // Tên chủ tài khoản (Viết hoa, không dấu)
+
+    // 2. LẤY THÔNG TIN TỪ ĐƠN HÀNG
+    // Lưu ý: Đảm bảo Model.TotalPrice là số tiền cần thanh toán
+    var amount = Model.TotalPrice;
+    var content = $"THANH TOAN DH {Model.OrderId}"; // Nội dung: THANH TOAN DH [Mã đơn]
+
+    // 3. TẠO LINK QR CODE TỰ ĐỘNG (Sử dụng dịch vụ của VietQR)
+    // Template: compact2 (gọn đẹp), print (để in), qr_only (chỉ mã QR)
+    var qrUrl = $"https://img.vietqr.io/image/{bankId}-{accountNo}-compact2.png?amount={amount}&addInfo={content}&accountName={accountName}";
 }
 
 <div class="container mt-5 mb-5">
@@ -10,8 +24,8 @@
             <div class="card shadow border-0 p-5" style="border-radius: 25px;">
                 <div class="mb-4">
                     <div class="display-1 text-success">🎉</div>
-                    <h1 class="text-danger fw-bold mt-3">CHÚC MỪNG BẠN!</h1>
-                    <h3 class="text-dark">Đơn hàng của bạn đã được đặt thành công</h3>
+                    <h1 class="text-danger fw-bold mt-3">ĐẶT HÀNG THÀNH CÔNG!</h1>
+                    <h3 class="text-dark">Cảm ơn bạn đã tin tưởng Jolly Noel</h3>
                 </div>
 
                 <div class="alert alert-success border-0 py-3 mb-4" style="background-color: #f0fff4;">
@@ -19,6 +33,28 @@
                     <h2 class="fw-bold text-success mb-0">#@Model.OrderId</h2>
                 </div>
 
+                <div class="card mb-4 border-2 border-danger" style="border-radius: 15px; border-style: dashed;">
+                    <div class="card-body">
+                        <h4 class="fw-bold text-danger mb-3">🚀 THANH TOÁN NHANH BẰNG QR</h4>
+                        <p class="text-muted small">Mở App Ngân hàng hoặc MoMo/ZaloPay để quét mã</p>
+
+                        <div class="text-center my-3">
+                            <img src="@qrUrl" alt="Mã QR thanh toán" class="img-fluid shadow-sm" style="max-width: 350px; border-radius: 10px;" />
+                        </div>
+
+                        <div class="alert alert-warning d-inline-block p-2 text-start">
+                            <small>
+                                <b>Ngân hàng:</b> @bankId - @accountName<br />
+                                <b>Số tài khoản:</b> @accountNo<br />
+                                <b>Số tiền:</b> <span class="text-danger fw-bold">@amount.ToString("N0") đ</span><br />
+                                <b>Nội dung:</b> <span class="fw-bold text-primary">@content</span>
+                            </small>
+                        </div>
+                        <p class="mt-2 fst-italic text-muted" style="font-size: 0.9rem;">
+                            * Hệ thống sẽ xử lý đơn hàng ngay sau khi nhận được thanh toán.
+                        </p>
+                    </div>
+                </div>
                 <div class="text-start bg-light p-4 rounded mb-4">
                     <h5 class="fw-bold border-bottom pb-2 mb-3">Thông tin nhận hàng:</h5>
                     <p class="mb-2"><strong>Người nhận:</strong> @Model.Name</p>
@@ -27,13 +63,9 @@
                     <p class="mb-0"><strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
                 </div>
 
-                <p class="text-muted italic mb-4">
-                    Cửa hàng sẽ liên hệ với bạn trong giây lát để xác nhận đơn hàng. Chúc bạn một mùa Giáng sinh ấm áp! 🎄
-                </p>
-
                 <div class="d-grid gap-2 d-md-block">
                     <a asp-controller="Home" asp-action="Index" class="btn btn-danger px-5 py-2 fw-bold shadow-sm" style="border-radius: 10px;">
-                        TIẾP TỤC MUA SẮM 🍗
+                        QUAY VỀ TRANG CHỦ 🍗
                     </a>
                 </div>
             </div>

@@ -1,22 +1,26 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using FastFoodWeb.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
 
 <ul class="navbar-nav d-flex flex-row align-items-center">
     @if (SignInManager.IsSignedIn(User))
     {
+        // Lấy thông tin User hiện tại
+        var user = await UserManager.GetUserAsync(User);
+
         <li class="nav-item">
-            @* Dòng chữ xin chào màu trắng, đậm để nổi bật trên nền đỏ *@
+            @* HIỂN THỊ TÊN THẬT (FullName) *@
             <span class="nav-link welcome-text text-white fw-bold me-2">
-                Xin chào, @(User.Identity?.Name)!
             </span>
+            <a asp-controller="Account" asp-action="Profile" class="nav-link welcome-text text-white fw-bold me-2" style="cursor: pointer;">
+                Xin chào, @(user?.FullName ?? User.Identity?.Name)!
+            </a>
         </li>
         <li class="nav-item">
-            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                @* Nút đăng xuất: Nền trắng, chữ đỏ, bo tròn, có viền vàng *@
-                <button id="logout" type="submit" class="btn btn-light text-danger fw-bold shadow-sm px-4"
-                        style="border-radius: 20px; border: 2px solid #ffce44; transition: 0.3s;">
-                    Đăng xuất
+            <form id="logoutForm" class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                <button id="logout" type="submit" class="btn btn-light text-danger fw-bold btn-sm rounded-pill shadow-sm">
+                    <i class="fas fa-sign-out-alt"></i> Thoát
                 </button>
             </form>
         </li>
@@ -24,20 +28,9 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-white fw-bold" id="register" asp-area="Identity" asp-page="/Account/Register">Đăng ký</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-white fw-bold" id="login" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a>
+            <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="Login">
+                <i class="fas fa-user"></i> Đăng nhập
+            </a>
         </li>
     }
 </ul>
-
-<style>
-    /* Hiệu ứng khi di chuột vào nút Đăng xuất */
-    #logout:hover {
-        background-color: #ffce44 !important; /* Đổi sang màu vàng kim */
-        color: #d42426 !important; /* Chữ đỏ đậm */
-        transform: scale(1.05);
-        box-shadow: 0 0 10px #ffffff;
-    }
-</style>

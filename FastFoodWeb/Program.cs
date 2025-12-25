@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using FastFoodWeb.Models; // Đảm bảo đúng namespace của dự án bạn
+using FastFoodWeb.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Cấu hình Database (Kết nối SQL Server)
+// 1. Cấu hình Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -12,25 +12,50 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// 2. Cấu hình Identity (Đăng nhập/Đăng ký)
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>() // Thêm dòng này để hỗ trợ phân quyền Admin
+// 2. Cấu hình Identity
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login"; // Chuyển hướng đến Controller của bạn
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+// --- THÊM ĐOẠN NÀY: CẤU HÌNH GOOGLE VÀ FACEBOOK ---
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        // Bạn lấy mã này từ https://console.cloud.google.com/
+        options.ClientId = "MÃ_CLIENT_ID_GOOGLE_CUA_BAN";
+        options.ClientSecret = "MÃ_SECRET_GOOGLE_CUA_BAN";
+    })
+    .AddFacebook(options =>
+    {
+        // Bạn lấy mã này từ https://developers.facebook.com/
+        options.AppId = "MÃ_APP_ID_FACEBOOK_CUA_BAN";
+        options.AppSecret = "MÃ_APP_SECRET_FACEBOOK_CUA_BAN";
+    });
+// ----------------------------------------------------
 
 builder.Services.AddControllersWithViews();
 
-// 3. CẤU HÌNH SESSION (Dùng cho Giỏ hàng) - QUAN TRỌNG
+builder.Services.AddHttpContextAccessor();
+
+// 3. Cấu hình Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Giỏ hàng tự xóa sau 30 phút vắng mặt
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
 
-// 4. Cấu hình Pipeline xử lý HTTP
+// 4. Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -46,13 +71,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 5. KÍCH HOẠT SESSION - QUAN TRỌNG (Phải đặt sau UseRouting và trước UseAuthorization)
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// 6. Cấu hình Route (Đường dẫn mặc định)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

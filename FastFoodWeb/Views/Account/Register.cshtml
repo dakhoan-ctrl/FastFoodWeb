@@ -1,0 +1,240 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Jolly Noel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* (Giữ nguyên toàn bộ CSS cũ của bạn ở đây để không mất style đẹp) */
+        :root {
+            --noel-red: #d42426;
+            --noel-dark-red: #a81c1e;
+            --noel-gold: #ffce44;
+            --snow-white: #ffffff;
+            --input-bg: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-grey: #6b7280;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+            body::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: radial-gradient(#d42426 1px, transparent 1px);
+                background-size: 30px 30px;
+                opacity: 0.03;
+                pointer-events: none;
+            }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            z-index: 10;
+        }
+
+        .login-card {
+            background: var(--snow-white);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 40px -10px rgba(212, 36, 38, 0.15);
+            border: 1px solid rgba(212, 36, 38, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 6px;
+                background: linear-gradient(90deg, var(--noel-red), var(--noel-gold), var(--noel-red));
+            }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+            .login-header h2 {
+                color: var(--noel-red);
+                font-size: 1.8rem;
+                font-weight: 800;
+                margin-bottom: 8px;
+            }
+
+            .login-header p {
+                color: var(--text-grey);
+                font-size: 0.95rem;
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+            .input-wrapper input {
+                background: var(--input-bg);
+                border: 2px solid transparent;
+                border-radius: 12px;
+                padding: 16px;
+                color: var(--text-dark);
+                font-size: 16px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                width: 100%;
+                outline: none;
+            }
+
+                .input-wrapper input::placeholder {
+                    color: transparent;
+                }
+
+            .input-wrapper label {
+                position: absolute;
+                left: 16px;
+                top: 16px;
+                color: var(--text-grey);
+                font-size: 15px;
+                font-weight: 500;
+                transition: all 0.2s ease;
+                pointer-events: none;
+            }
+
+            .input-wrapper input:focus, .input-wrapper input:not(:placeholder-shown) {
+                background: var(--snow-white);
+                border-color: var(--noel-red);
+                box-shadow: 0 0 0 4px rgba(212, 36, 38, 0.1);
+            }
+
+                .input-wrapper input:focus + label, .input-wrapper input:not(:placeholder-shown) + label {
+                    top: -10px;
+                    left: 12px;
+                    font-size: 13px;
+                    background: var(--snow-white);
+                    padding: 0 6px;
+                    color: var(--noel-red);
+                    font-weight: 600;
+                    border-radius: 4px;
+                }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--noel-red) 0%, var(--noel-dark-red) 100%);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(212, 36, 38, 0.2);
+        }
+
+            .btn-login:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(212, 36, 38, 0.3);
+            }
+
+        .register-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.95rem;
+            color: var(--text-grey);
+        }
+
+            .register-link a {
+                color: var(--noel-red);
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.2s;
+            }
+
+                .register-link a:hover {
+                    color: var(--noel-dark-red);
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Đăng Ký 🎁</h2>
+                <p>Tạo tài khoản để nhận quà Giáng sinh!</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="fullname" name="fullName" placeholder="Họ và Tên" required autocomplete="off">
+                        <label for="fullname">Họ và Tên</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" placeholder="Email" required autocomplete="off">
+                        <label for="email">Email</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+                        <label for="password">Mật khẩu</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                        <label for="confirmPassword">Nhập lại mật khẩu</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Đăng Ký Ngay 🚀
+                </button>
+            </form>
+
+            <div class="register-link">
+                Đã có tài khoản? <a asp-action="Login">Đăng nhập tại đây</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

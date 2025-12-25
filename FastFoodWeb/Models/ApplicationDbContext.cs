@@ -7,7 +7,7 @@ namespace FastFoodWeb.Models
     // Đổi kế thừa từ DbContext sang IdentityDbContext
     // Việc kế thừa này giúp Entity Framework tự động tạo ra các bảng: 
     // AspNetUsers, AspNetRoles, AspNetUserRoles...
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -18,6 +18,7 @@ namespace FastFoodWeb.Models
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
