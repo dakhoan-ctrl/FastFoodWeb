@@ -4,9 +4,13 @@
     ViewData["Title"] = "Thực đơn";
 }
 
-<div class="text-center mb-4">
-    <h2 class="fw-bold text-danger">🎁 THỰC ĐƠN ƯU ĐÃI NOEL 🎁</h2>
+<div id="homeCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#homeCarousel" data-bs-slide-to="2"></button>
 </div>
+            </div>
 
 <div class="container mb-5">
     <div class="row justify-content-center">
@@ -22,7 +26,9 @@
                 <button class="btn btn-danger px-4 border-0" type="submit">
                     <i class="fas fa-search"></i> TÌM KIẾM
                 </button>
+                    </div>
             </form>
+            </div>
 
             @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch))
             {
@@ -33,9 +39,6 @@
                     </a>
                 </div>
             }
-        </div>
-    </div>
-</div>
 
 <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
     @if (Model != null && Model.Any())
@@ -46,10 +49,6 @@
                 <div class="card h-100 shadow-sm border-warning" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
                     <img src="@item.ImageUrl" class="card-img-top" style="height: 180px; object-fit: cover;"
                          onerror="this.src='/images/no-image.png'">
-
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold text-dark">@item.Name</h6>
-                        <p class="text-danger fw-bold fs-5">@item.Price.ToString("N0") đ</p>
                     </div>
 
                     <div class="card-footer bg-transparent border-0 pb-3">
@@ -78,6 +77,9 @@
             <a asp-action="Index" class="btn btn-outline-danger px-4 rounded-pill">Xem tất cả thực đơn</a>
         </div>
     }
+</div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
