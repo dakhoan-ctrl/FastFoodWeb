@@ -17,6 +17,9 @@ namespace FastFoodWeb.Controllers
         // CẬP NHẬT: Thêm tham số searchString để nhận từ khóa tìm kiếm từ View
         public async Task<IActionResult> Index(int? categoryId, string searchString)
         {
+            var categories = await _db.Categories.ToListAsync();
+            ViewBag.Categories = categories;
+
             // 1. Khởi tạo truy vấn lấy danh sách sản phẩm kèm thông tin Danh mục
             var productsQuery = _db.Products.Include(p => p.Category).AsQueryable();
 

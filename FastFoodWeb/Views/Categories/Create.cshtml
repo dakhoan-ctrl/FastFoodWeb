@@ -3,12 +3,38 @@
 <div class="container mt-4">
     <h3>THÊM DANH MỤC MỚI</h3>
     <hr />
-    <form asp-action="Create" class="col-md-4">
+    <form asp-action="Create" class="col-md-6">
         <div class="form-group mb-3">
-            <label class="control-label">Tên danh mục (Ví dụ: Pizza, Burger...)</label>
-            <input asp-for="Name" class="form-control" required />
+            <label class="control-label fw-bold">Tên danh mục</label>
+            <input asp-for="Name" class="form-control" required placeholder="Ví dụ: Burger" />
+            <span asp-validation-for="Name" class="text-danger"></span>
         </div>
+
+        <div class="form-group mb-4">
+            <label class="control-label fw-bold mb-2">Chọn Icon hiển thị:</label>
+            <div class="d-flex flex-wrap gap-2">
+                @{
+                    var icons = new List<string> {
+                                "fas fa-utensils", "fas fa-drumstick-bite", "fas fa-hamburger",
+                                "fas fa-pizza-slice", "fas fa-bacon", "fas fa-ice-cream",
+                                "fas fa-cocktail", "fas fa-coffee", "fas fa-bread-slice",
+                                "fas fa-fish", "fas fa-carrot", "fas fa-pepper-hot"
+                                };
+                }
+
+                @foreach (var icon in icons)
+                {
+                    <input type="radio" class="btn-check" name="Icon" id="icon_@icon" value="@icon" autocomplete="off"
+                           @(Model?.Icon == icon ? "checked" : "")>
+                    <label class="btn btn-outline-danger" for="icon_@icon">
+                        <i class="@icon fa-lg"></i>
+                    </label>
+                }
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Lưu lại</button>
         <a href="/Categories/Index" class="btn btn-secondary">Quay lại</a>
+
     </form>
 </div>

@@ -1,29 +1,39 @@
 ﻿@model FastFoodWeb.Models.Category
 
 <div class="container mt-5">
-    <div class="card shadow-lg border-0 mx-auto" style="max-width: 600px; border-radius: 20px;">
-        <div class="card-header bg-warning text-center py-3" style="border-radius: 20px 20px 0 0;">
-            <h4 class="fw-bold mb-0">✏️ CHỈNH SỬA TÊN DANH MỤC</h4>
+    <h3>CHỈNH SỬA DANH MỤC</h3>
+    <hr />
+    <form asp-action="Edit" class="col-md-6">
+        <input type="hidden" asp-for="CategoryId" />
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Tên danh mục</label>
+            <input asp-for="Name" class="form-control" />
         </div>
-        <div class="card-body p-4">
-            <form asp-action="Edit">
-                <input type="hidden" asp-for="CategoryId" />
 
-                <div class="mb-4">
-                    <label class="form-label fw-bold">Tên danh mục mới</label>
-                    <input asp-for="Name" class="form-control form-control-lg" placeholder="Ví dụ: Gà Giòn Vui Vẻ" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
-                </div>
-
-                <div class="alert alert-info py-2 small">
-                    <i class="fas fa-info-circle"></i> ID của danh mục này là <strong>@Model.CategoryId</strong> (Mặc định không được sửa ID).
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
-                    <a asp-action="Index" class="btn btn-light border px-4">Quay lại</a>
-                    <button type="submit" class="btn btn-warning px-5 fw-bold">LƯU THAY ĐỔI</button>
-                </div>
-            </form>
+        <div class="mb-4">
+            <label class="form-label fw-bold">Chọn Icon:</label>
+            <div class="d-flex flex-wrap gap-2">
+                @{
+                    var icons = new List<string> { 
+                         "fas fa-utensils", "fas fa-drumstick-bite", "fas fa-hamburger", 
+                         "fas fa-pizza-slice", "fas fa-bacon", "fas fa-ice-cream", 
+                         "fas fa-cocktail", "fas fa-coffee", "fas fa-bread-slice", 
+                         "fas fa-fish", "fas fa-carrot", "fas fa-pepper-hot"
+                    };
+                }
+                
+                @foreach (var icon in icons)
+                {
+                    <input type="radio" class="btn-check" name="Icon" id="edit_icon_@icon" value="@icon" autocomplete="off" 
+                           @(Model.Icon == icon ? "checked" : "")> <label class="btn btn-outline-danger" for="edit_icon_@icon">
+                        <i class="@icon fa-lg"></i>
+                    </label>
+                }
+            </div>
         </div>
-    </div>
+
+        <button type="submit" class="btn btn-warning">Lưu thay đổi</button>
+        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    </form>
 </div>

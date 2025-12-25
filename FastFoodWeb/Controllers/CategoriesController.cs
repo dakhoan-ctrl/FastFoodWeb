@@ -33,7 +33,7 @@ namespace FastFoodWeb.Controllers
         // POST: Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,Name")] Category category)
+        public async Task<IActionResult> Create([Bind("CategoryId,Name,Icon")] Category category) 
         {
             if (ModelState.IsValid)
             {
@@ -59,7 +59,7 @@ namespace FastFoodWeb.Controllers
         // POST: Categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,Name")] Category category)
+        public async Task<IActionResult> Edit(int id, [Bind("CategoryId,Name,Icon")] Category category)
         {
             if (id != category.CategoryId) return NotFound();
 
